@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <span>{{message}}张三</span>
+        <span>{{message}}李四</span>
+        <span>{{message}}王五</span>
+        <div>{{name}}刘亦菲</div>
+        <div>{{name}}黄晶玉</div>
+    </div>
+    <script>
+        // 跟着老师敲
+        // const obj = {
+        //     message: '哈哈哈',
+        //     name: "wangsiqi"
+        // }
+        // Object.keys(obj).forEach(key => {
+        //     let value = obj[key]
+
+        //     // 通过.defineProperty(参数1,参数2,参数3)给obj“重新定义”原来的属性 监听值的改变 因为原来的属性是不好监听的
+        //     // 参数一对象 参数二是定义的属性 参数三是{set,get}
+        //     Object.defineProperty(obj, key, {
+        //         // 重新赋值就会执行set函数
+        //         // 监听属性的改变
+        //         set(newValue) {
+        //             // 1、
+        //             console.log('监听' + key + '改变');
+        //             // 2、
+        //             // 监听到了 那接下来告诉谁了？谁用告诉谁？谁在用？
+        //             // 对#app里面的内容做解析 根据解析html代码获取到哪些人在用这个属性 谁用一次key就会调用一次get 张三、李四、王五
+        //             value = newValue
+
+        //             // dep.notify()
+        //         },
+        //         //监听到属性对应的值
+        //         get() {
+        //             console.log('获取' + key + '对应的值');
+        //             //谁用一次key就会调用一次get  比如张三调用了一次get 李四调用了一次get  王五也调用了一次get
+        //             //那到时候一旦发生改变 就要通知他们update
+        //             return value
+        //         }
+        //     })
+        // })
+
+        // // 发布者订阅者模式
+        // // 发布者
+        // class Dep {
+        //     constructor() {
+        //         this.subs = []
+        //     }
+        //     addSub(wather) {
+        //         this.subs.push(wather)
+        //     }
+        //     notify() {
+        //         this.subs.forEach(item => {
+        //             item.update();
+        //         })
+        //     }
+        // }
+        // // 订阅者
+        // class Watcher {
+        //     constructor(name) {
+        //         this.name = name;
+        //     }
+        //     update() {
+        //         console.log(this.name + '发生update');
+        //     }
+        // }
+        // const dep = new Dep()
+        // const w1 = new Watcher('张三')
+        // dep.addSub(w1)
+        // const w2 = new Watcher('李四')
+        // dep.addSub(w2)
+        // const w3 = new Watcher('王五')
+        // dep.addSub(w3)
+        // dep.notify()
+
+        // 自己敲
+        const obj = {
+            message: '哈哈哈',
+            name: "wangsiqi"
+        }
+        class Dep {
+            constructor() {
+                this.subs = []
+            }
+            addSubs(watch) {
+                this.subs.push(watch)
+            }
+            notify() {
+                this.subs.forEach(item => item.update())
+            }
+        }
+        class Watcher {
+            constructor(name) {
+                this.name = name
+            }
+            update() {
+                console.log(this.name + "更新了");
+            }
+        }
+        // const dep = new Dep()
+        Object.keys(obj).forEach(key => {
+            let value = obj[key]
+            const dep = new Dep()
+            Object.defineProperty(obj, key, {
+                set(newValue) {
+                    console.log('监听到改变');
+                    value = newValue
+                    dep.notify()
+                },
+                get() {
+                    console.log('监听到值');
+                    const w1 = new Watcher('张三')
+                    dep.addSubs(w1)
+                    const w2 = new Watcher('王五')
+                    dep.addSubs(w2)
+                    const w3 = new Watcher('李四')
+                    dep.addSubs(w3)
+                    return value
+                }
+            })
+        })
+    </script>
+    <script src="./node_modules/vue/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el: '#app',
+            data: {
+                message: '哈哈哈',
+                name: "wangsiqi"
+            }
+        })
+    </script>
+</body>
+
+</html>
